@@ -1,0 +1,22 @@
+diff --git a/me/jet315/repairtokens/utils/ReflectionUtils.java b/me/jet315/repairtokens/utils/ReflectionUtils.java
+index 91da574..95a0065 100644
+--- a/me/jet315/repairtokens/utils/ReflectionUtils.java
++++ b/me/jet315/repairtokens/utils/ReflectionUtils.java
+@@ -7,6 +7,8 @@
+ package me.jet315.repairtokens.utils;
+ 
+ import java.lang.reflect.Method;
++
++import me.jet315.repairtokens.Core;
+ import org.bukkit.Bukkit;
+ 
+ public class ReflectionUtils {
+@@ -143,7 +145,7 @@ public class ReflectionUtils {
+          isNewVersion = true;
+       }
+ 
+-      System.out.println("\n[RepairToken] Detected version " + mcVersion + " (nms " + nmsVersion + ")");
++      Core.getInstance().getLogger().info("Detected version " + mcVersion + " (nms " + nmsVersion + ")"); // Luma - fix logger usage
+    }
+ }
+ // Luma end
