@@ -1,0 +1,138 @@
+diff --git a/me/jet315/repairtokens/utils/ReflectionUtils.java b/me/jet315/repairtokens/utils/ReflectionUtils.java
+index f495bbd..91da574 100644
+--- a/me/jet315/repairtokens/utils/ReflectionUtils.java
++++ b/me/jet315/repairtokens/utils/ReflectionUtils.java
+@@ -1,21 +1,27 @@
++// Luma start - modern version support
++//
++// Source code recreated from a .class file by IntelliJ IDEA
++// (powered by FernFlower decompiler)
++//
++
+ package me.jet315.repairtokens.utils;
+ 
+ import java.lang.reflect.Method;
+-import java.util.logging.Level;
+-
+-import me.jet315.repairtokens.Core;
+ import org.bukkit.Bukkit;
+ 
+ public class ReflectionUtils {
+    public static String nmsVersion;
+    public static String serverVersion;
+    public static String fullServerVersion;
+-   public static MinecraftVersion mcVersion = MinecraftVersion.MC1_8;
+-   public static boolean isNewVersion = false;
+-   public static boolean paper = false;
++   public static MinecraftVersion mcVersion;
++   public static boolean isNewVersion;
++   public static boolean paper;
++
++   public ReflectionUtils() {
++   }
+ 
+    public static Method getMethod(Class var0, String var1) {
+-      for (Method var5 : var0.getDeclaredMethods()) {
++      for(Method var5 : var0.getDeclaredMethods()) {
+          if (var5.getName().equalsIgnoreCase(var1)) {
+             return var5;
+          }
+@@ -28,11 +34,11 @@ public class ReflectionUtils {
+       Method[] var3 = var0.getDeclaredMethods();
+ 
+       label32:
+-      for (Method var7 : var3) {
++      for(Method var7 : var3) {
+          if (var7.getName().equalsIgnoreCase(var1)) {
+-            Class[] var8 = var7.getParameterTypes();
++            Class<?>[] var8 = var7.getParameterTypes();
+             if (var8.length == var2.length) {
+-               for (int var9 = 0; var9 < var8.length; var9++) {
++               for(int var9 = 0; var9 < var8.length; ++var9) {
+                   if (var8[var9] != var2[var9]) {
+                      continue label32;
+                   }
+@@ -46,7 +52,7 @@ public class ReflectionUtils {
+       return null;
+    }
+ 
+-   public static Class getClass(String var0) {
++   public static Class<?> getClass(String var0) {
+       try {
+          return Class.forName(var0);
+       } catch (ClassNotFoundException var2) {
+@@ -56,10 +62,12 @@ public class ReflectionUtils {
+    }
+ 
+    static {
+-      Bukkit.getLogger().log(Level.INFO, "[JetsMinions] Version is " + Bukkit.getServer().getVersion());
++      mcVersion = MinecraftVersion.MC1_8;
++      isNewVersion = false;
++      paper = false;
+       if (Bukkit.getServer().getClass().getPackage().getName().equalsIgnoreCase("org.bukkit.craftbukkit")) {
+          if (!Bukkit.getVersion().contains("v1_20") && !Bukkit.getVersion().contains("1.20")) {
+-            if (Bukkit.getVersion().contains("1.21")) {
++            if (Bukkit.getVersion().contains("1.21") || Bukkit.getVersion().contains("1_21")) {
+                if (Bukkit.getServer().getVersion().contains(".3")) {
+                   nmsVersion = "v1_21_R2";
+                   serverVersion = "v1_21_R2";
+@@ -69,36 +77,30 @@ public class ReflectionUtils {
+                } else if (Bukkit.getServer().getVersion().contains(".5")) {
+                   nmsVersion = "v1_21_R4";
+                   serverVersion = "v1_21_R4";
+-                  mcVersion = MinecraftVersion.MC1_21;
+-               } else if (Bukkit.getServer().getVersion().contains(".6")) {
+-                  nmsVersion = "v1_21_R4";
+-                  serverVersion = "v1_21_R4";
+-                  mcVersion = MinecraftVersion.MC1_21;
+-               } else if (!Bukkit.getServer().getVersion().contains(".7") && !Bukkit.getServer().getVersion().contains(".8")) {
+-                  nmsVersion = "v1_21_R1";
+-                  serverVersion = "v1_21_R1";
+-               } else {
++               } else if (Bukkit.getServer().getVersion().contains(".8")) {
+                   nmsVersion = "v1_21_R5";
+                   serverVersion = "v1_21_R5";
+-                  mcVersion = MinecraftVersion.MC1_21;
++               } else if (Bukkit.getServer().getVersion().contains(".10")) {
++                  nmsVersion = "v1_21_R6";
++                  serverVersion = "v1_21_R6";
++               } else if (Bukkit.getServer().getVersion().contains(".11")) {
++                  nmsVersion = "v1_21_R7";
++                  serverVersion = "v1_21_R7";
++               } else {
++                  nmsVersion = "v1_21_R6";
++                  serverVersion = "v1_21_R6";
+                }
+             }
+          } else {
+-            // Luma start - 1.21.11 support
+-            nmsVersion = "";
+-            serverVersion = "";
+-            // Luma end
++            nmsVersion = "v1_20_R4";
++            serverVersion = "v1_20_R4";
+          }
+ 
+          fullServerVersion = Bukkit.getVersion();
+          paper = true;
+       } else {
+          nmsVersion = Bukkit.getServer().getClass().getPackage().getName().substring(23);
+-         serverVersion = Bukkit.getServer()
+-            .getClass()
+-            .getPackage()
+-            .getName()
+-            .substring(Bukkit.getServer().getClass().getPackage().getName().lastIndexOf(46) + 1);
++         serverVersion = Bukkit.getServer().getClass().getPackage().getName().substring(Bukkit.getServer().getClass().getPackage().getName().lastIndexOf(46) + 1);
+          fullServerVersion = Bukkit.getVersion();
+       }
+ 
+@@ -141,6 +143,8 @@ public class ReflectionUtils {
+          isNewVersion = true;
+       }
+ 
+-      Core.getInstance().getLogger().info("\n[RepairToken] Detected version " + mcVersion + " (nms " + nmsVersion + ")"); // Luma - cleanup: use plugin logger
++      System.out.println("\n[RepairToken] Detected version " + mcVersion + " (nms " + nmsVersion + ")");
+    }
+ }
++// Luma end
++
