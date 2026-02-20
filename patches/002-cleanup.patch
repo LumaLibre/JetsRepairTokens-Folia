@@ -1,0 +1,117 @@
+diff --git a/me/jet315/repairtokens/Core.java b/me/jet315/repairtokens/Core.java
+index fd40f8a..26a2546 100644
+--- a/me/jet315/repairtokens/Core.java
++++ b/me/jet315/repairtokens/Core.java
+@@ -6,7 +6,7 @@ import me.jet315.repairtokens.listeners.CraftingListener;
+ import me.jet315.repairtokens.listeners.InventoryClick;
+ import me.jet315.repairtokens.manager.RepairManager;
+ import me.jet315.repairtokens.utils.Properties;
+-import me.jet315.repairtokens.web.Metrics;
++//import me.jet315.repairtokens.web.Metrics; // Luma - cleanup: remove metrics
+ import org.bukkit.Bukkit;
+ import org.bukkit.plugin.java.JavaPlugin;
+ 
+@@ -23,9 +23,9 @@ public class Core extends JavaPlugin {
+    public void onEnable() {
+       //loadConfig0(); Luma - decompile
+       long var1 = System.currentTimeMillis();
+-      System.out.println("\n[RepairToken] Initializing Plugin");
++      getLogger().info("Initializing Plugin"); // Luma - cleanup: use plugin logger
+       instance = this;
+-      new Metrics();
++      //new Metrics(); // Luma - cleanup: remove metrics
+       serverVersion = Bukkit.getServer().getClass().getPackage().getName();
+       serverVersion = serverVersion.substring(serverVersion.lastIndexOf(".") + 1);
+       this.properties = new Properties(this);
+@@ -37,7 +37,7 @@ public class Core extends JavaPlugin {
+       }
+ 
+       this.getCommand("repairtoken").setExecutor(new CommandHandler());
+-      System.out.println("[RepairToken] Initializing Complete - Time took " + String.valueOf(System.currentTimeMillis() - var1) + "Ms\n");
++      getLogger().info("Initializing Complete - Time took " + String.valueOf(System.currentTimeMillis() - var1) + "Ms"); // Luma - cleanup: use plugin logger
+    }
+ 
+    public void onDisable() {
+diff --git a/me/jet315/repairtokens/manager/RepairManager.java b/me/jet315/repairtokens/manager/RepairManager.java
+index 77f430e..902fefb 100644
+--- a/me/jet315/repairtokens/manager/RepairManager.java
++++ b/me/jet315/repairtokens/manager/RepairManager.java
+@@ -78,11 +78,13 @@ public class RepairManager {
+             );
+             this.validTokens.put(var4, var17);
+          } catch (IllegalArgumentException var18) {
+-            System.out.println("Error occurred while processing the item " + var4);
+-            System.out.println("issue parsing the Material");
++            // Luma start - cleanup: use plugin logger
++            Core.getInstance().getLogger().warning("Error occurred while processing the item " + var4);
++            Core.getInstance().getLogger().warning("issue parsing the Material");
+          } catch (Exception var19) {
+-            System.out.println("Error occurred while processing the item " + var4);
+-            System.out.println("Details about the error: " + var19.getMessage());
++            Core.getInstance().getLogger().warning("Error occurred while processing the item " + var4);
++            Core.getInstance().getLogger().warning("Details about the error: " + var19.getMessage());
++            // Luma end
+          }
+       }
+    }
+@@ -98,7 +100,7 @@ public class RepairManager {
+                continue;
+             }
+ 
+-            System.out.println("Error loading material " + var4 + " (Material does not exist) - Likely a version issue?");
++            Core.getInstance().getLogger().warning("Error loading material " + var4 + " (Material does not exist) - Likely a version issue?"); // Luma - cleanup: use plugin logger
+          }
+ 
+          if (var5 != null) {
+diff --git a/me/jet315/repairtokens/utils/NBTUtils.java b/me/jet315/repairtokens/utils/NBTUtils.java
+index af46e22..46fd50f 100644
+--- a/me/jet315/repairtokens/utils/NBTUtils.java
++++ b/me/jet315/repairtokens/utils/NBTUtils.java
+@@ -6,6 +6,8 @@ import java.lang.reflect.Method;
+ import java.util.ArrayList;
+ import java.util.HashMap;
+ import java.util.List;
++
++import me.jet315.repairtokens.Core;
+ import org.bukkit.Material;
+ import org.bukkit.enchantments.Enchantment;
+ import org.bukkit.entity.EntityType;
+@@ -17,7 +19,7 @@ import org.bukkit.inventory.meta.SpawnEggMeta;
+ public class NBTUtils {
+    public static ItemStack setNBTData(ItemStack var0, HashMap<String, String> var1) {
+       if (var0 == null) {
+-         System.out.println("JetsRepairTokens >> Error occured. SetNBTData invalid item");
++         Core.getInstance().getLogger().warning("Error occurred. SetNBTData invalid item"); // Luma - cleanup: use plugin logger
+          return new ItemStack(Material.AIR);
+       } else {
+          ItemStack var2 = var0.clone();
+@@ -288,7 +290,7 @@ public class NBTUtils {
+             try {
+                return ReflectionUtils.getClass("net.minecraft.nbt.NBTTagCompound").newInstance();
+             } catch (Exception var1) {
+-               System.out.println(var1.getCause());
++               var1.printStackTrace(); // Luma - cleanup
+             }
+          }
+ 
+diff --git a/me/jet315/repairtokens/utils/ReflectionUtils.java b/me/jet315/repairtokens/utils/ReflectionUtils.java
+index 3bc12b9..0a06675 100644
+--- a/me/jet315/repairtokens/utils/ReflectionUtils.java
++++ b/me/jet315/repairtokens/utils/ReflectionUtils.java
+@@ -2,6 +2,8 @@ package me.jet315.repairtokens.utils;
+ 
+ import java.lang.reflect.Method;
+ import java.util.logging.Level;
++
++import me.jet315.repairtokens.Core;
+ import org.bukkit.Bukkit;
+ 
+ public class ReflectionUtils {
+@@ -137,6 +139,6 @@ public class ReflectionUtils {
+          isNewVersion = true;
+       }
+ 
+-      System.out.println("\n[RepairToken] Detected version " + mcVersion + " (nms " + nmsVersion + ")");
++      Core.getInstance().getLogger().info("\n[RepairToken] Detected version " + mcVersion + " (nms " + nmsVersion + ")"); // Luma - cleanup: use plugin logger
+    }
+ }

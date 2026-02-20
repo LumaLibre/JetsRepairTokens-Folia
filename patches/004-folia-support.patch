@@ -1,0 +1,170 @@
+diff --git a/__resources__/plugin.yml b/__resources__/plugin.yml
+index 18d20ec..1cb0e70 100644
+--- a/__resources__/plugin.yml
++++ b/__resources__/plugin.yml
+@@ -7,4 +7,5 @@ author: jet315
+ commands:
+   repairtoken:
+     description: The base command for RepairTokens plugin
+-    aliases: [rt,jetsrepairtokens]
+\ No newline at end of file
++    aliases: [rt,jetsrepairtokens]
++folia-supported: true # Luma - folia support
+diff --git a/me/jet315/repairtokens/commands/admincommands/GiveAllTokenCommand.java b/me/jet315/repairtokens/commands/admincommands/GiveAllTokenCommand.java
+index 2ff64e1..3b2b12e 100644
+--- a/me/jet315/repairtokens/commands/admincommands/GiveAllTokenCommand.java
++++ b/me/jet315/repairtokens/commands/admincommands/GiveAllTokenCommand.java
+@@ -46,9 +46,13 @@ public class GiveAllTokenCommand extends CommandExecutor {
+          ItemStack var5 = var3.getItemStack();
+          var5.setAmount(var4);
+ 
+-         for (Player var7 : Bukkit.getOnlinePlayers()) {
+-            var7.getInventory().addItem(new ItemStack[]{var5});
++         // Luma start - folia support
++         for (Player player : Bukkit.getOnlinePlayers()) {
++            player.getScheduler().run(Core.getInstance(), (task) -> {
++               player.getInventory().addItem(var5);
++            }, null);
+          }
++         // Luma end
+ 
+          if (!Core.getInstance().getProperties().getAllReceivedRepairToken().equalsIgnoreCase("none")) {
+             String var10 = Core.getInstance()
+diff --git a/me/jet315/repairtokens/commands/admincommands/GiveTokenCommand.java b/me/jet315/repairtokens/commands/admincommands/GiveTokenCommand.java
+index e0aa4f4..6d37dba 100644
+--- a/me/jet315/repairtokens/commands/admincommands/GiveTokenCommand.java
++++ b/me/jet315/repairtokens/commands/admincommands/GiveTokenCommand.java
+@@ -24,44 +24,48 @@ public class GiveTokenCommand extends CommandExecutor {
+       if (var3 == null) {
+          var1.sendMessage(Core.getInstance().getProperties().getPluginPrefix() + ChatColor.RED + "The player + " + var2[1] + " is not online!");
+       } else {
+-         RepairItem var4 = Core.getInstance().getRepairManager().getValidTokens().get(var2[2]);
+-         if (var4 == null) {
+-            var1.sendMessage(Core.getInstance().getProperties().getPluginPrefix() + ChatColor.RED + "The Repair Token " + var2[2] + " does not exist!");
+-         } else {
+-            int var5;
+-            try {
+-               var5 = Integer.parseInt(var2[3]);
+-               if (var5 == 0) {
+-                  throw new NumberFormatException();
++         // Luma start - folia support
++         var3.getScheduler().run(Core.getInstance(), (task) -> {
++            RepairItem var4 = Core.getInstance().getRepairManager().getValidTokens().get(var2[2]);
++            if (var4 == null) {
++               var1.sendMessage(Core.getInstance().getProperties().getPluginPrefix() + ChatColor.RED + "The Repair Token " + var2[2] + " does not exist!");
++            } else {
++               int var5;
++               try {
++                  var5 = Integer.parseInt(var2[3]);
++                  if (var5 == 0) {
++                     throw new NumberFormatException();
++                  }
++               } catch (NumberFormatException var7) {
++                  var1.sendMessage(Core.getInstance().getProperties().getPluginPrefix() + ChatColor.RED + var2[3] + " is not a valid, positive integer!");
++                  return;
+                }
+-            } catch (NumberFormatException var7) {
+-               var1.sendMessage(Core.getInstance().getProperties().getPluginPrefix() + ChatColor.RED + var2[3] + " is not a valid, positive integer!");
+-               return;
+-            }
+ 
+-            var1.sendMessage(
+-               Core.getInstance().getProperties().getPluginPrefix()
+-                  + ChatColor.GREEN
+-                  + var3.getName()
+-                  + " has been given "
+-                  + var5
+-                  + " "
+-                  + var4.getItemStack().getItemMeta().getDisplayName()
+-            );
+-            ItemStack var6 = var4.getItemStack();
+-            var6.setAmount(var5);
+-            var3.getInventory().addItem(new ItemStack[]{var6});
+-            if (!Core.getInstance().getProperties().getReceivedRepairToken().equalsIgnoreCase("none")) {
+-               var3.sendMessage(
+-                  Core.getInstance()
+-                     .getProperties()
+-                     .getReceivedRepairToken()
+-                     .replaceAll("%NAME%", var4.getItemStack().getItemMeta().getDisplayName())
+-                     .replaceAll("%NUMBER%", String.valueOf(var5))
+-                     .replaceAll("%PREFIX%", Core.getInstance().getProperties().getPluginPrefix())
++               var1.sendMessage(
++                       Core.getInstance().getProperties().getPluginPrefix()
++                               + ChatColor.GREEN
++                               + var3.getName()
++                               + " has been given "
++                               + var5
++                               + " "
++                               + var4.getItemStack().getItemMeta().getDisplayName()
+                );
++               ItemStack var6 = var4.getItemStack();
++               var6.setAmount(var5);
++               var3.getInventory().addItem(new ItemStack[]{var6});
++               if (!Core.getInstance().getProperties().getReceivedRepairToken().equalsIgnoreCase("none")) {
++                  var3.sendMessage(
++                          Core.getInstance()
++                                  .getProperties()
++                                  .getReceivedRepairToken()
++                                  .replaceAll("%NAME%", var4.getItemStack().getItemMeta().getDisplayName())
++                                  .replaceAll("%NUMBER%", String.valueOf(var5))
++                                  .replaceAll("%PREFIX%", Core.getInstance().getProperties().getPluginPrefix())
++                  );
++               }
+             }
+-         }
++         }, null);
++         // Luma end
+       }
+    }
+ }
+diff --git a/me/jet315/repairtokens/utils/ParticleUtils.java b/me/jet315/repairtokens/utils/ParticleUtils.java
+index a1a8c84..dab26ed 100644
+--- a/me/jet315/repairtokens/utils/ParticleUtils.java
++++ b/me/jet315/repairtokens/utils/ParticleUtils.java
+@@ -6,7 +6,6 @@ import org.bukkit.Effect;
+ import org.bukkit.Location;
+ import org.bukkit.Particle;
+ import org.bukkit.entity.Player;
+-import org.bukkit.scheduler.BukkitRunnable;
+ 
+ public class ParticleUtils {
+    public static ArrayList<Location> generateHelix(Player var0) {
+@@ -22,23 +21,23 @@ public class ParticleUtils {
+       return var1;
+    }
+ 
+-   public static void spawnParticles(final ArrayList<Location> var0, final Player var1) {
+-      (new BukkitRunnable() {
+-         public void run() {
+-            for (int var1x = 0; var1x < var0.size() && var1x != 7; var1x++) {
+-               Location var2 = (Location)var0.get(var1x);
+-               var0.remove(var1x);
+-               if (Core.serverVersion.startsWith("v1_8")) {
+-                  var1.playEffect(var2, Effect.valueOf("CLOUD"), 1);
+-               } else {
+-                  var2.getWorld().spawnParticle(Particle.CLOUD, var2, 1, 0.0, 0.0, 0.0, 0.0, null);
+-               }
++   // Luma start - folia support
++   public static void spawnParticles(final ArrayList<Location> locations, final Player player) {
++      player.getScheduler().runAtFixedRate(Core.getInstance(), (task) -> {
++         for (int i = 0; i < locations.size() && i != 7; i++) {
++            Location var2 = locations.get(i);
++            locations.remove(i);
++            if (Core.serverVersion.startsWith("v1_8")) {
++               player.playEffect(var2, Effect.valueOf("CLOUD"), 1);
++            } else {
++               var2.getWorld().spawnParticle(Particle.CLOUD, var2, 1, 0.0, 0.0, 0.0, 0.0, null);
+             }
++         }
+ 
+-            if (var0.size() == 0) {
+-               this.cancel();
+-            }
++         if (locations.isEmpty()) {
++            task.cancel();
+          }
+-      }).runTaskTimer(Core.getInstance(), 0L, 1L);
++      }, null, 1L, 1L); // should maybe check for Folia, just setting to 1 on all versions for now
+    }
++   // Luma end
+ }

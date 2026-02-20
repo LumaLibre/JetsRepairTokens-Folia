@@ -1,0 +1,49 @@
+diff --git a/me/jet315/repairtokens/Core.java b/me/jet315/repairtokens/Core.java
+index 960ac9a..fd40f8a 100644
+--- a/me/jet315/repairtokens/Core.java
++++ b/me/jet315/repairtokens/Core.java
+@@ -21,7 +21,7 @@ public class Core extends JavaPlugin {
+    }
+ 
+    public void onEnable() {
+-      loadConfig0();
++      //loadConfig0(); Luma - decompile
+       long var1 = System.currentTimeMillis();
+       System.out.println("\n[RepairToken] Initializing Plugin");
+       instance = this;
+diff --git a/me/jet315/repairtokens/commands/admincommands/ListTokensCommand.java b/me/jet315/repairtokens/commands/admincommands/ListTokensCommand.java
+index 311f9cd..fe4b633 100644
+--- a/me/jet315/repairtokens/commands/admincommands/ListTokensCommand.java
++++ b/me/jet315/repairtokens/commands/admincommands/ListTokensCommand.java
+@@ -47,7 +47,7 @@ public class ListTokensCommand extends CommandExecutor {
+          }
+ 
+          int var4 = 1;
+-         HashMap var5 = Core.getInstance().getRepairManager().getValidTokens();
++         HashMap<String, RepairItem> var5 = Core.getInstance().getRepairManager().getValidTokens(); // Luma - decompile
+ 
+          for (String var7 : var5.keySet()) {
+             TextComponent var8 = new TextComponent(
+diff --git a/me/jet315/repairtokens/manager/RepairManager.java b/me/jet315/repairtokens/manager/RepairManager.java
+index 964094b..77f430e 100644
+--- a/me/jet315/repairtokens/manager/RepairManager.java
++++ b/me/jet315/repairtokens/manager/RepairManager.java
+@@ -39,13 +39,15 @@ public class RepairManager {
+ 
+             int var9 = Integer.valueOf(var8.replaceAll("%", ""));
+             ItemStack var11 = new ItemStack(var6, 1, (short)var7);
+-            List var12 = var2.getStringList(var5 + ".lore");
+-            ArrayList var13 = new ArrayList();
+-            if (var12 != null && var12.size() > 0) {
++            // Luma start - decompile
++            List<String> var12 = var2.getStringList(var5 + ".lore");
++            ArrayList<String> var13 = new ArrayList();
++            if (!var12.isEmpty()) {
+                for (String var15 : var12) {
+                   var13.add(ChatColor.translateAlternateColorCodes('&', var15).replaceAll("%DURABILITY%", String.valueOf(var9)));
+                }
+             }
++            // Luma end
+ 
+             ItemMeta var20 = var11.getItemMeta();
+             var20.setDisplayName(ChatColor.translateAlternateColorCodes('&', var2.getString(var5 + ".name")));

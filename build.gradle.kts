@@ -7,24 +7,22 @@ import org.gradle.process.ExecOperations
 import java.io.ByteArrayOutputStream
 
 plugins {
-    id("java-library")
-    id("io.freefair.lombok") version "9.2.0"
+    id("java")
     id("com.gradleup.shadow") version "9.3.1"
 }
 
-// TODO: Configure
-group = "dev.lumas.decompile_patcher_template"
-version = "0.0.0"
+group = "me.jet315.repairtokens"
+version = "3.15-Folia"
 
 repositories {
-    // TODO: Configure
+    mavenCentral()
+    maven("https://repo.papermc.io/repository/maven-public/")
 }
 
 dependencies {
-    // TODO: Configure
+    compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
 }
 
-// TODO: Configure
 tasks {
     shadowJar {
         archiveClassifier.set("")
@@ -47,20 +45,18 @@ tasks {
     }
 }
 
-// TODO: Configure
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
-// TODO: Configure
 val decompileConfig = DecompileConfig(
-    inputJar = "sources/Decompile-Patcher-Template.jar",
+    inputJar = "sources/JetsRepairTokens.jar",
     packageMappings = mapOf(
-        "dev/lumas/decompile_patcher_template" to "."
+        "me/jet315/repairtokens" to "."
     ),
     resourceMappings = mapOf(
         "plugin.yml" to ".",
-        //"config.yml" to "."
+        "config.yml" to "."
     )
 )
 
